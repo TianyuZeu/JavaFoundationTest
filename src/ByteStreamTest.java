@@ -1,15 +1,26 @@
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 //字节流样例程序
 public class ByteStreamTest {
 
     //访问文件 fileInputStream fileOutputStream
     private void FileIOStream() {
-        try(FileInputStream fis = new FileInputStream("E:\\test\\fistest.txt");
+        try(FileInputStream fis = new FileInputStream("E:\\test\\fostest.txt");
+//            FileOutputStream fos = new FileOutputStream("E:\\test\\fostest.txt")){
+//            int i;
+//            while((i = fis.read())!= -1){//Q:why is variable i is necessary.
+//            fos.write(i);
+//            }
+//            System.out.println("FileInputStream FileoutStream 测试成功");
+
             FileOutputStream fos = new FileOutputStream("E:\\test\\fostest.txt")){
+            byte[] b = {0x6e,0x65,0x77,0x74,0x6f,0x75,0x63,0x68};
+            fos.write(b);
             int i;
             while((i = fis.read())!= -1){//Q:why is variable i is necessary.
-            fos.write(i);
+                System.out.println((char)i);
             }
             System.out.println("FileInputStream FileoutStream 测试成功");
         }catch(IOException e){
@@ -43,10 +54,34 @@ public class ByteStreamTest {
     //缓冲 BufferedInputStream BufferedOutputStream
     private void BufferedIOStreamTest(){
 
-      //BufferedInputStream
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        try {
+            bis = new BufferedInputStream(new FileInputStream("E:\\test\\biostest.txt"));
+            bos = new BufferedOutputStream(new FileOutputStream("E:\\test\\biostest.txt"));
+            byte[] b = {0x6e,0x65,0x77,0x74,0x6f,0x75,0x63,0x68};
+            bos.write(b);
+            bos.flush();//close也会flush，是否直接可以close呢
+            int i;
+            int j = -1;
+            byte[] bb = new byte[16];
+            while((i = bis.read(bb)) != -1){
+                String chunk = new String(bb,0,i);
+                System.out.println(chunk);
+            }
+            //System.out.println(Arrays.toString(bb));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
 
+            try {
+               // bos.close();
+                bis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-
+        }
     }
 
 
@@ -58,11 +93,13 @@ public class ByteStreamTest {
         ByteStreamTest bst = new ByteStreamTest();
 
         //访问文件 fileInputStream fileOutputStream
-        //bst.FileIOStream();
+        bst.FileIOStream();
 
         //基本类型的二进制存取 DatInputStream DataInputStream
         bst.DateIOStream();
 
+        //缓冲 BufferedInputStream BufferedOutputStream
+        bst.BufferedIOStreamTest();
     }
 
 }
