@@ -114,7 +114,6 @@ public class CharacterStreamTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
