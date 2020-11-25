@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.*;
 
 public class Sender implements Runnable {
@@ -17,7 +18,8 @@ public class Sender implements Runnable {
         this.toIP = toIP;
         this.toPort = toPort;
         try {
-            this.datagramSocket = new DatagramSocket(fromPort);
+            this.datagramSocket = new DatagramSocket(fromPort);//用哪一个端口发
+            bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -25,80 +27,25 @@ public class Sender implements Runnable {
 
     @Override
     public void run() {
-
+        boolean flag = true;
+        while(flag){
             try {
-                while(true){
-                    String data = bufferedReader.readLine();
-                    byte[] buff = data.getBytes();
-                    datagramPacket = new DatagramPacket(buff,buff.length,new InetSocketAddress("localhost",9999));
-                    datagramSocket.send(datagramPacket);
-                    if(data == "bye")
-                        break;
-                }
+                String data = bufferedReader.readLine();
+                byte[] buff = data.getBytes();
+                datagramPacket = new DatagramPacket(buff,buff.length,new InetSocketAddress(this.toIP,this.toPort));//服务器地址 端口
+                datagramSocket.send(datagramPacket);
+                if(data.equals("bye"))
+                    flag = false;
             } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
-                try {
-                    bufferedReader.close();
-                    datagramSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
-
-
-
-
-
-
-
-    public int getFromPort() {
-        return fromPort;
-    }
-
-    public String getToIP() {
-        return toIP;
-    }
-
-    public int getToPort() {
-        return toPort;
-    }
-
-    public DatagramSocket getDatagramSocket() {
-        return datagramSocket;
-    }
-
-    public BufferedReader getBufferedReader() {
-        return bufferedReader;
-    }
-
-    public void setFromPort(int fromPort) {
-        this.fromPort = fromPort;
-    }
-
-    public void setToIP(String toIP) {
-        this.toIP = toIP;
-    }
-
-    public void setToPort(int toPort) {
-        this.toPort = toPort;
-    }
-
-    public void setDatagramSocket(DatagramSocket datagramSocket) {
-        this.datagramSocket = datagramSocket;
-    }
-
-    public void setBufferedReader(BufferedReader bufferedReader) {
-        this.bufferedReader = bufferedReader;
-    }
-
-    public DatagramPacket getDatagramPacket() {
-        return datagramPacket;
-    }
-
-    public void setDatagramPacket(DatagramPacket datagramPacket) {
-        this.datagramPacket = datagramPacket;
+        try {
+            bufferedReader.close();
+            datagramSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
